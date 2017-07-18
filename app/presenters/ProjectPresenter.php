@@ -87,6 +87,19 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
         $this['projectForm']->setDefaults($projectAr);
 
     }
+    public function actionDelete($postId)
+    {
+        $project = $this->database->table('project')->get($postId);
+        if (!$project) {
+            $this->error('Příspěvek nebyl nalezen');
+        }
+
+        $project->delete();
+
+        $this->flashMessage("Projekt byl úspěšně smazán.", 'success');
+        $this->redirect('Homepage:default');
+
+    }
 
     public function renderEdit($postId)
     {
