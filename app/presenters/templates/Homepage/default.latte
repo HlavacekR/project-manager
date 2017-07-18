@@ -1,0 +1,13 @@
+{block content}
+	<h1 n:block="title">Seznam projektů</h1>
+
+	{foreach $projects as $project}
+		<div class="post">
+			<div class="date">{$project->deadline|date:'F j, Y'}</div>
+
+			<h2>{$project->name}</h2>
+
+			<div>{$project->web_project}</div>
+		</div>
+	{/foreach}
+{/block}
