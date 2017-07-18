@@ -3,11 +3,23 @@
 
 	{foreach $projects as $project}
 		<div class="post">
-			<div class="date">{$project->deadline|date:'F j, Y'}</div>
+			<div class="date">{$project->deadline|date:'d.m.Y'}</div>
 
 			<h2>{$project->name}</h2>
-
+			<div>
+			{ifset $projectTypes[$project->type]}
+					{$projectTypes[$project->type]}
+			{else}
+				<i>* Typ nebyl zadán</i>
+			{/ifset}
+			</div>
 			<div>{$project->web_project}</div>
+			<a n:href="Project:edit $project->id">Upravit příspěvek</a>
 		</div>
+		<br /><br /><br /><br />
 	{/foreach}
+
+
+	<a n:href="Project:create">Zadat nový projekt</a>
+
 {/block}

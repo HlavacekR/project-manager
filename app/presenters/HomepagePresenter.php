@@ -19,5 +19,7 @@ class HomepagePresenter extends Nette\Application\UI\Presenter
     {
         $this->template->projects = $this->database->table('project')
             ->order('id DESC');
+        $this->template->projectTypes = ProjectPresenter::$projectTypes;
+
     }
 }
