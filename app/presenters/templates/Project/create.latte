@@ -1,6 +1,17 @@
 {block content}
-	<h1 n:block="title">Nový projekt</h1>
 
-	{control projectForm}
+	<div class="row">
+		<div class="col-md-6">
+			<h2>Nový projekt</h2>
+		</div>
+		<div class="col-md-6">
+			<a class="btn my-nav-btn btn-info pull-right" n:href="Homepage:default">Zpět na seznam projektů</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-10">
+			{control projectForm}
+		</div>
+	</div>
 
 {/block}

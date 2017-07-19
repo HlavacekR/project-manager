@@ -4,16 +4,38 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
 
+	<!-- Bootstrap core CSS -->
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/main.css" rel="stylesheet">
+
 	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h1><span n:block="title" class="label label-primary">Project manager</span></h1>
 
-	{include content}
-
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div n:foreach="$flashes as $flash" class="alert alert-{$flash->type}" role="alert">{$flash->message}</div>
+			</div>
+		</div>
+		{include content}
+	</div>
 	{block scripts}
 	<script src="https://nette.github.io/resources/js/netteForms.min.js"></script>
+		<!-- Bootstrap core JavaScript
+       ================================================== -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+		<script src="/js/bootstrap.min.js"></script>
+
 	{/block}
+
 </body>
 </html>

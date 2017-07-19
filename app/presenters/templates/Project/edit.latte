@@ -1,6 +1,20 @@
 {block content}
-	<h1 n:block="title">Editace projektu id #{$edit_id}</h1>
 
-	{control projectForm}
+	<div class="row">
+		<div class="col-md-6">
+			<h2>Editace projektu id #{$edit_id}</h2>
+		</div>
+		<div class="col-md-6">
+			<a class="btn my-nav-btn btn-info pull-right" n:href="Homepage:default">Zpět na seznam projektů</a>
+		</div>
+	</div>
 
+
+	<div class="row">
+		<div class="col-md-10">
+			{control projectForm}
+		</div>
+	</div>
 {/block}
+
+
