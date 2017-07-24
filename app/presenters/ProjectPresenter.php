@@ -10,10 +10,10 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
 {
     /** @var Nette\Database\Context */
     private $database;
-    static $projectTypes = array(
+    static $projectTypes = [
         '1' => 'časově omezený projekt',
         '2' => 'Continuous integration'
-    );
+    ];
 
     public function __construct(Nette\Database\Context $database)
     {
@@ -75,7 +75,7 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
         } catch(\Exception $e) {
             $this->flashMessage("Datum je ve špatném formátu.", 'error');
             if ($postId) {
-                $this->redirect("Project:edit",array("postId" => $postId));
+                $this->redirect("Project:edit",["postId" => $postId]);
             } else {
                 $this->redirect("Project:create");
             }
@@ -90,7 +90,7 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
             $project = $this->database->table('project')->get($postId);
             $project->update($values);
         } else {
-            $project = $this->database->table('project')->insert($values);
+            $this->database->table('project')->insert($values);
         }
 
         $this->flashMessage("Projekt byl úspěšně uložen.", 'success');
