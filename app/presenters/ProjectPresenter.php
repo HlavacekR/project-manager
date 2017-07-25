@@ -5,19 +5,22 @@ namespace App\Presenters;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls;
+use App\Model\ProjectManager;
 
 class ProjectPresenter extends Nette\Application\UI\Presenter
 {
     /** @var Nette\Database\Context */
-    private $database;
+    private $projectManager;
+    private $id;
     static $projectTypes = [
         '1' => 'časově omezený projekt',
         '2' => 'Continuous integration'
     ];
 
-    public function __construct(Nette\Database\Context $database)
+    public function __construct(ProjectManager $projectManager,$id = null)
     {
-        $this->database = $database;
+        $this->projectManager = $projectManager;
+
     }
 
     protected function createComponentProjectForm()
@@ -33,7 +36,7 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
 
         $form->addSubmit('send', 'Uložit projekt');
 
-        $form->onSuccess[] = [$this, 'postFormSucceeded'];
+        //$form->onSuccess[] = [$this, 'postFormSucceeded'];
 
 
         //bootstrap 3 renderer
@@ -100,7 +103,7 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
 
     public function actionEdit($postId)
     {
-        $project = $this->database->table('project')->get($postId);
+        $project = $this->projectManager->getProject($postId);
         if (!$project) {
             $this->error('Příspěvek nebyl nalezen');
         }
