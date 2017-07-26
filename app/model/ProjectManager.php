@@ -2,11 +2,11 @@
 namespace App\Model;
 
 use Nette;
+use Nette\SmartObject;
 
 class ProjectManager
 {
-    use Nette\SmartObject;
-
+    
     /**
      * @var Nette\Database\Context
      */
@@ -30,7 +30,7 @@ class ProjectManager
     
     public function getProjects()
     {
-        return $this->database->table('project')
+        $projects = $this->database->table('project')
             ->order('id DESC');
     }
 

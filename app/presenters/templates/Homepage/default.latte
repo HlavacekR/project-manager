@@ -15,6 +15,7 @@
 					<tr>
 						<th>ID</th>
 						<th>Název projektu</th>
+						<th>Zúčastnění</th>
 						<th>Datum odevzdání</th>
 						<th>Typ projektu</th>
 						<th>Webový projkt</th>
@@ -29,6 +30,14 @@
 							</td>
 							<td>
 								{$project->name}
+							</td>
+							<td>
+								{php $indexProject = 0;}
+								{foreach $project->related('pr_vs_us') as $userProject}
+
+									{if $indexProject >0}, {/if}{$userProject->user->firstname} {$userProject->user->lastname}
+									{php $indexProject++;}
+								{/foreach}
 							</td>
 							<td >
 								{$project->deadline|date:'d.m.Y'}
