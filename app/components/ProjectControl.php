@@ -2,7 +2,9 @@
 
 namespace App\Components;
 
+use Nette;
 use App\Model\ProjectManager;
+use App\Model\UserManager;
 use Nette\Application\UI;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls;
@@ -10,7 +12,10 @@ use Nette\Forms\Controls;
 class ProjectControl extends UI\Control
 {
 
-
+    /**
+     * @var Nette\Database\Context
+     */
+    private $database;
     /**
      * @var define Nette even
      */
@@ -19,7 +24,14 @@ class ProjectControl extends UI\Control
      * @var App\Model\ProjectManager
      */
     private $projectManager;
-
+    /**
+     * @var App\Model\UserManager
+     */
+    private $userManager;
+    /**
+     * @var array list of users for select element
+     */
+    private $userSelect;
     /**
      * @var int Id project
      */
@@ -33,9 +45,17 @@ class ProjectControl extends UI\Control
      * @param $projectId
      * @param App\Model\projectManager $projectManager model project
      */
-    public function __construct($projectId,$link, projectManager $projectManager)
+    public function __construct(Nette\Database\Context $database, $projectId,$link, projectManager $projectManager, userManager $userManager)
     {
         $this->projectManager = $projectManager;
+        $this->userManager = $userManager;
+        $this->database = $database;
+
+        // load list of users for select element
+        foreach($this->userManager->getUsers() as $user) {
+            $this->userSelect[$user->id] = $user->firstname." ".$user->lastname;
+        }
+
         $this->projectId = $projectId;
 
         $this->homepageLink = $link;
@@ -53,25 +73,42 @@ class ProjectControl extends UI\Control
             ->setPrompt('Zvolte typ projektu')->setRequired();
         $form->addCheckbox('web_project', 'Webový projekt:');
 
+
+        $countUsers = $this->projectManager->getCountUsers();
+
+        $i = 1;
+        if($this->projectId != null) {
+            $project = $this->projectManager->getProject($this->projectId);
+            $users = $project->related("pr_vs_us");
+
+            foreach ($users as $user) {
+                $form->addSelect('add_user_'.$i, 'Uživatel '.$i.':', $this->userSelect)
+                    ->setPrompt('Zvolte uživatele');
+                $i++;
+            }
+        }
+
+        for($j=$i; $j <= $countUsers  ;$j++) {
+            $form->addSelect('add_user_'.$j, 'Uživatel '.$j.':', $this->userSelect)
+                ->setPrompt('Zvolte uživatele');
+        }
+        
         $form->addSubmit('send', 'Uložit projekt');
 
         //bootstrap 3 renderer
         $form = $this->bootstrapRendering($form);
         $form->onSuccess[] = [$this, "processForm"]; //$this->processForm;
-
-
+        
         //setting deafult values for editing
         if($this->projectId != null) {
-            $form = $this->loadingDefaultData($form, $this->projectId);
+            $form = $this->loadingDefaultData($form,$project,$users);
         }
         
         return $form;
     }
 
-    public function loadingDefaultData($form,$projectId) {
+    public function loadingDefaultData($form,$project,$users) {
 
-
-        $project = $this->projectManager->getProject($projectId);
 
         if($project) {
 
@@ -80,6 +117,12 @@ class ProjectControl extends UI\Control
 
             if(!isset(ProjectManager::$projectTypes[$projectAr["type"]])) {
                 unset($projectAr["type"]);
+            }
+
+            $i = 1;
+            foreach($users as $user) {
+                $projectAr["add_user_".$i] = $user->user_id;
+                $i++;
             }
 
             $form->setDefaults($projectAr);
@@ -133,8 +176,40 @@ class ProjectControl extends UI\Control
         }
 
         $values["deadline"] = $date;
+        $userArr = [];
+        foreach($values as $ind => $val) {
+            $testInd = explode("add_user_",$ind);
+            if(isset($testInd[1])) {
+                $userArr[$testInd[1]] = $val;
+                unset($values[$ind]);
+            }
+        }
 
-        $this->projectManager->saveProject($this->projectId,$values);
+        $idLast = $this->projectManager->saveProject($this->projectId,$values);
+        if($this->projectId != null) {
+            //delete all
+            foreach($userArr as $userId) {
+                $pr_vs_us = $this->database->table('pr_vs_us')->where("user_id",$userId)->where("project_id",$this->projectId);
+                $pr_vs_us->delete();
+            }
+        }
+
+        //add only from form
+        foreach($userArr as $userId) {
+            if($userId !== null) {
+                if ($this->projectId != null) {
+                    $projectId = $this->projectId;
+                } else {
+                    $projectId = $idLast->id;
+                }
+
+                $values = [
+                   "user_id" => $userId,
+                   "project_id" => $projectId
+                ];
+                $this->database->table('pr_vs_us')->insert($values);
+            }
+        }
 
         $this->onFormSuccess();
     }

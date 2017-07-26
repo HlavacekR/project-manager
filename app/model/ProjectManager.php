@@ -30,7 +30,7 @@ class ProjectManager
     
     public function getProjects()
     {
-        $projects = $this->database->table('project')
+        return $this->database->table('project')
             ->order('id DESC');
     }
 
@@ -39,10 +39,20 @@ class ProjectManager
         if ($id) {
             $project = $this->database->table('project')->get($id);
             $project->update($values);
+            return false;
         } else {
-            $this->database->table('project')->insert($values);
+            return $this->database->table('project')->insert($values);
         }
     }
-    
+
+    public function getCountUsers()
+    {
+        return $this->database->table('user')->count('*');
+    }
+
+    public function getLastId() {
+
+        return $this->database->getInsertId('project');
+    }
 
 }

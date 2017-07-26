@@ -18,15 +18,15 @@ class UserManager
         $this->database = $database;
     }
 
-    public function getProject($id)
+    public function getUser($id)
     {
-        return $this->database->table('member')->get($id);
+        return $this->database->table('user')->get($id);
             
     }
     
     public function getUsers()
     {
-        return $this->database->table('member')
+        return $this->database->table('user')
             ->order('lastname ASC');
     }
 }
