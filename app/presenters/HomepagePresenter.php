@@ -18,7 +18,7 @@ class HomepagePresenter extends Nette\Application\UI\Presenter
     public function renderDefault()
     {
         $this->template->projects = $this->projectManager->getProjects();
-        $this->template->projectTypes = ProjectPresenter::$projectTypes;
+        $this->template->projectTypes = ProjectManager::$projectTypes;
 
     }
 }

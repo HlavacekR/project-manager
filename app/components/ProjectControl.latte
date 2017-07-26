@@ -1,0 +1,19 @@
+{block content}
+	<div class="row">
+		<div class="col-md-6">
+			{if $editId}
+				<h2>Editace projektu id #{$editId}</h2>
+			{else}
+				<h2>Nový projekt</h2>
+			{/if}
+		</div>
+		<div class="col-md-6">
+			<a class="btn my-nav-btn btn-info pull-right"  href="{$homepageLink}" >Zpět na seznam projektů</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-10">
+			{control myForm}
+		</div>
+	</div>
+{/block}
