@@ -103,7 +103,7 @@ class ProjectControl extends UI\Control
         if($this->projectId != null) {
             $form = $this->loadingDefaultData($form,$project,$users);
         }
-        
+
         return $form;
     }
 
@@ -141,6 +141,9 @@ class ProjectControl extends UI\Control
         $renderer->wrappers['label']['container'] = 'div class="col-sm-3 control-label"';
         $renderer->wrappers['control']['description'] = 'span class=help-block';
         $renderer->wrappers['control']['errorcontainer'] = 'span class=help-block';
+        $renderer->wrappers['error']['container'] = 'div class="alert alert-danger"';
+        $renderer->wrappers['error']['item'] = 'p';
+        
         $form->getElementPrototype()->class('form-horizontal');
         $form->onRender[] = function ($form) {
             foreach ($form->getControls() as $control) {
@@ -168,9 +171,7 @@ class ProjectControl extends UI\Control
         try {
             $date = new \Nette\Utils\DateTime($values["deadline"]);
         } catch(\Exception $e) {
-            $this->presenter->flashMessage("Datum je ve špatném formátu.", 'error');
-            $this->redirect("this");
-
+            $form->addError("Datum je ve špatném formátu.");
             return false;
 
         }
