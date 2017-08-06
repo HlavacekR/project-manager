@@ -50,9 +50,4 @@ class ProjectManager
         return $this->database->table('user')->count('*');
     }
 
-    public function getLastId() {
-
-        return $this->database->getInsertId('project');
-    }
-
 }
