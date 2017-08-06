@@ -6,7 +6,11 @@ use Nette\SmartObject;
 
 class ProjectManager
 {
-    
+
+    /**
+     * @var App\Model\PrVsUsManager
+     */
+    private $prVsUsManager;
     /**
      * @var Nette\Database\Context
      */
@@ -16,10 +20,11 @@ class ProjectManager
         '2' => 'Continuous integration'
     ];
 
-    public function __construct(Nette\Database\Context $database)
+    public function __construct(Nette\Database\Context $database, prVsUsManager $prVsUsManager)
     {
         
         $this->database = $database;
+        $this->prVsUsManager = $prVsUsManager;
     }
 
     public function getProject($id)
@@ -74,4 +79,51 @@ class ProjectManager
         return $form;
     }
 
+    public function processFormProject($form, $values, $projectId ) {
+
+        try {
+        $date = new \Nette\Utils\DateTime($values["deadline"]);
+        } catch(\Exception $e) {
+            $form->addError("Datum je ve špatném formátu.");
+            return false;
+
+        }
+
+        $values["deadline"] = $date;
+        $userArr = [];
+        foreach($values as $ind => $val) {
+            $testInd = explode("add_user_",$ind);
+            if(isset($testInd[1])) {
+                $userArr[$testInd[1]] = $val;
+                unset($values[$ind]);
+            }
+        }
+
+        $idLast = $this->saveProject($projectId,$values);
+        if($projectId != null) {
+            //delete all
+            foreach($userArr as $userId) {
+                $this->prVsUsManager->deleteRecord($userId,$projectId);
+
+            }
+        }
+
+        //add only from form
+        foreach($userArr as $userId) {
+            if($userId !== null) {
+                if ($projectId != null) {
+                    $projectId = $projectId;
+                } else {
+                    $projectId = $idLast->id;
+                }
+
+                $values = [
+                    "user_id" => $userId,
+                    "project_id" => $projectId
+                ];
+                $this->prVsUsManager->insertRecord($values);
+            }
+        }
+        
+    }
 }

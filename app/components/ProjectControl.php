@@ -12,11 +12,6 @@ use Nette\Forms\Controls;
 
 class ProjectControl extends UI\Control
 {
-
-    /**
-     * @var Nette\Database\Context
-     */
-    private $database;
     /**
      * @var define Nette even
      */
@@ -48,14 +43,17 @@ class ProjectControl extends UI\Control
 
     /**
      * @param $projectId
+     * @param $link
      * @param App\Model\projectManager $projectManager model project
+     * @param App\Model\userManager $userManager model project
+     * @param App\Model\prVsUsManager $prVsUsManager model project
      */
-    public function __construct(Nette\Database\Context $database, $projectId,$link, projectManager $projectManager, userManager $userManager, prVsUsManager $prVsUsManager)
+    public function __construct($projectId,$link, projectManager $projectManager, userManager $userManager, prVsUsManager $prVsUsManager)
     {
         $this->projectManager = $projectManager;
         $this->prVsUsManager = $prVsUsManager;
         $this->userManager = $userManager;
-        $this->database = $database;
+
 
         // load list of users for select element
         foreach($this->userManager->getUsers() as $user) {
@@ -147,52 +145,7 @@ class ProjectControl extends UI\Control
 
     public function processForm($form, $values) {
 
-
-
-        try {
-            $date = new \Nette\Utils\DateTime($values["deadline"]);
-        } catch(\Exception $e) {
-            $form->addError("Datum je ve špatném formátu.");
-            return false;
-
-        }
-
-        $values["deadline"] = $date;
-        $userArr = [];
-        foreach($values as $ind => $val) {
-            $testInd = explode("add_user_",$ind);
-            if(isset($testInd[1])) {
-                $userArr[$testInd[1]] = $val;
-                unset($values[$ind]);
-            }
-        }
-
-        $idLast = $this->projectManager->saveProject($this->projectId,$values);
-        if($this->projectId != null) {
-            //delete all
-            foreach($userArr as $userId) {
-                $this->prVsUsManager->deleteRecord($userId,$this->projectId);
-
-            }
-        }
-
-        //add only from form
-        foreach($userArr as $userId) {
-            if($userId !== null) {
-                if ($this->projectId != null) {
-                    $projectId = $this->projectId;
-                } else {
-                    $projectId = $idLast->id;
-                }
-
-                $values = [
-                   "user_id" => $userId,
-                   "project_id" => $projectId
-                ];
-                $this->prVsUsManager->insertRecord($values);
-            }
-        }
-
+        $this->projectManager->processFormProject($form, $values,$this->projectId);
         $this->onFormSuccess();
     }
 
