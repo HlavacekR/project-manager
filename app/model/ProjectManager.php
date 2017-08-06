@@ -50,4 +50,28 @@ class ProjectManager
         return $this->database->table('user')->count('*');
     }
 
+    public function loadingDefaultData($form,$project,$users) {
+
+
+        if($project) {
+
+            $projectAr = $project->toArray();
+            $projectAr["deadline"] = $project->deadline->format("d.m.Y");
+
+            if(!isset(self::$projectTypes[$projectAr["type"]])) {
+                unset($projectAr["type"]);
+            }
+
+            $i = 1;
+            foreach($users as $user) {
+                $projectAr["add_user_".$i] = $user->user_id;
+                $i++;
+            }
+
+            $form->setDefaults($projectAr);
+        }
+
+        return $form;
+    }
+
 }

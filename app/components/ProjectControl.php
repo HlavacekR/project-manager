@@ -107,36 +107,11 @@ class ProjectControl extends UI\Control
         
         //setting deafult values for editing
         if($this->projectId != null) {
-            $form = $this->loadingDefaultData($form,$project,$users);
+            $form = $this->projectManager->loadingDefaultData($form,$project,$users);
         }
 
         return $form;
     }
-
-    public function loadingDefaultData($form,$project,$users) {
-
-
-        if($project) {
-
-            $projectAr = $project->toArray();
-            $projectAr["deadline"] = $project->deadline->format("d.m.Y");
-
-            if(!isset(ProjectManager::$projectTypes[$projectAr["type"]])) {
-                unset($projectAr["type"]);
-            }
-
-            $i = 1;
-            foreach($users as $user) {
-                $projectAr["add_user_".$i] = $user->user_id;
-                $i++;
-            }
-
-            $form->setDefaults($projectAr);
-        }
-
-        return $form;
-    }
-
     public function bootstrapRendering($form)  {
 
         $renderer = $form->getRenderer();
