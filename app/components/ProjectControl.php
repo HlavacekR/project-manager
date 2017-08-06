@@ -4,6 +4,7 @@ namespace App\Components;
 
 use Nette;
 use App\Model\ProjectManager;
+use App\Model\PrVsUsManager;
 use App\Model\UserManager;
 use Nette\Application\UI;
 use Nette\Application\UI\Form;
@@ -20,6 +21,10 @@ class ProjectControl extends UI\Control
      * @var define Nette even
      */
     public $onFormSuccess;
+    /**
+     * @var App\Model\PrVsUsManager
+     */
+    private $prVsUsManager;
     /**
      * @var App\Model\ProjectManager
      */
@@ -45,9 +50,10 @@ class ProjectControl extends UI\Control
      * @param $projectId
      * @param App\Model\projectManager $projectManager model project
      */
-    public function __construct(Nette\Database\Context $database, $projectId,$link, projectManager $projectManager, userManager $userManager)
+    public function __construct(Nette\Database\Context $database, $projectId,$link, projectManager $projectManager, userManager $userManager, prVsUsManager $prVsUsManager)
     {
         $this->projectManager = $projectManager;
+        $this->prVsUsManager = $prVsUsManager;
         $this->userManager = $userManager;
         $this->database = $database;
 
@@ -190,8 +196,8 @@ class ProjectControl extends UI\Control
         if($this->projectId != null) {
             //delete all
             foreach($userArr as $userId) {
-                $pr_vs_us = $this->database->table('pr_vs_us')->where("user_id",$userId)->where("project_id",$this->projectId);
-                $pr_vs_us->delete();
+                $this->prVsUsManager->deleteRecord($userId,$this->projectId);
+
             }
         }
 
@@ -208,7 +214,7 @@ class ProjectControl extends UI\Control
                    "user_id" => $userId,
                    "project_id" => $projectId
                 ];
-                $this->database->table('pr_vs_us')->insert($values);
+                $this->prVsUsManager->insertRecord($values);
             }
         }
 

@@ -14,5 +14,6 @@ session:
 services:
 	- App\Model\ProjectManager
 	- App\Model\UserManager
+	- App\Model\PrVsUsManager
 	- App\Components\IProjectControlFactory
 	router: App\RouterFactory::createRouter
