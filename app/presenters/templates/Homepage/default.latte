@@ -24,7 +24,7 @@
 				</thead>
 				<tbody>
 					{foreach $projects as $project}
-					<tr>
+						<tr>
 							<td>
 								{$project->id}
 							</td>
@@ -32,11 +32,8 @@
 								{$project->name}
 							</td>
 							<td>
-								{php $indexProject = 0;}
 								{foreach $project->related('pr_vs_us') as $userProject}
-
-									{if $indexProject >0}, {/if}{$userProject->user->firstname} {$userProject->user->lastname}
-									{php $indexProject++;}
+									{$userProject->user->firstname} {$userProject->user->lastname} {sep},{/sep}
 								{/foreach}
 							</td>
 							<td >
@@ -56,9 +53,7 @@
 								<a class="btn btn-xs btn-info" n:href="Project:edit $project->id">Upravit</a>
 								<a class="btn btn-xs btn-danger" n:href="Project:delete $project->id">Smazat</a>
 							</td>
-
-
-					</tr>
+						</tr>
 					{/foreach}
 				</tbody>
 			</table>
