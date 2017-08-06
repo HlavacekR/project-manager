@@ -50,14 +50,15 @@ class ProjectPresenter extends Nette\Application\UI\Presenter
 
     public function actionEdit($postId = null)
     {
-        if($postId != null) {
+        if($postId == null) {
+            $this->error('Nebyl vybrán žádný projekt');
+            return false;
+        }
 
-            $this->id = $postId;
-            $project = $this->projectManager->getProject($postId);
-            if (!$project) {
-                $this->error('Příspěvek nebyl nalezen');
-            }
-
+        $this->id = $postId;
+        $project = $this->projectManager->getProject($postId);
+        if (!$project) {
+            $this->error('Žádný projekt nebyl nalezen');
         }
 
     }
